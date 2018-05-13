@@ -7,20 +7,34 @@ export default class Tier1 extends Component {
 
   constructor(props) {
     super(props)
-    const initialColor = getRandomColor()
+    const initialColor = getRandomColor();
     this.state = {
       color: initialColor,
-      childColor: getReducedColor(initialColor)
+      childColor: getReducedColor(initialColor),
+      grandChildColor: getReducedColor(getReducedColor(initialColor))
     }
   }
 
+  handleOnClick = () => {
+    const color = getRandomColor();
+    this.setState({color: color, childColor: getReducedColor(color), grandChildColor: getReducedColor(getReducedColor(color))});
+  }
+
+  handleChildClick = (e) => {
+    const color = getRandomColor()
+    if (e.target.classList.contains("tier2")) {
+      this.setState({childColor: color, grandChildColor: getReducedColor(color)})
+    } else {
+      this.setState({grandChildColor: color})
+    }
+    e.stopPropagation()
+  }
+
   render() {
-    // hard coded color values have been added below, though they won't be
-    // present in our solution. What should they be replaced with?
     return (
-      <div onClick={() => {this.setState({color: "#000"})}} className="tier1" style={{backgroundColor: this.state.color, color: this.state.color}}>
-        <Tier2 color={"#0F0"} />
-        <Tier2 color={"#0FF"} />
+      <div onClick={this.handleOnClick} className="tier1" style={{backgroundColor: this.state.color, color: this.state.color}}>
+        <Tier2 color={this.state.childColor} childColor={this.state.grandChildColor} handleChildClick={this.handleChildClick} />
+        <Tier2 color={this.state.childColor} childColor={this.state.grandChildColor} handleChildClick={this.handleChildClick} />
       </div>
     )
   }
